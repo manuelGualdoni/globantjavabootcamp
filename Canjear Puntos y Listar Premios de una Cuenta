@@ -1,5 +1,5 @@
 VISTA: 
-private void canjearPremios() {
+	private void canjearPremios() {
 		System.out.println("Ingrese el ID de la cuenta deseada para canjear puntos");
 		int idCuenta = sc.nextInt();
 		if (controller.validarCuenta(idCuenta) != null){
@@ -8,7 +8,12 @@ private void canjearPremios() {
 			menuPremio();
 			int idPremio = sc.nextInt();
 			if (controller.validarPremio(idPremio) != null) {
-				controller.canjearPuntosController(idCuenta, idPremio);
+				if (controller.canjearPuntosController(idCuenta, idPremio)) {
+					System.out.println("Canje Exitoso, Su nuevo saldo en puntos es: " + controller.validarCuenta(idCuenta).getPuntos());
+				}else{
+					System.out.println("Su cuenta no posee los puntos necesarios para este premio");
+					operacionInvalida();
+				}
 			}else{
 				operacionInvalida();
 			} 
@@ -18,7 +23,7 @@ private void canjearPremios() {
 	}
 	
 	private void operacionInvalida() {
-		System.out.println("ID invalido, Si desea comenzar nuevamente la opracion prione y");
+		System.out.println("Si desea comenzar nuevamente la opracion prione y");
 		String op = sc.next();
 		if (op.contains("y")) {
 			canjearPremios();
@@ -50,12 +55,11 @@ private void canjearPremios() {
 			if (op.contains("y")){
 				listarPremiosDeUnaCuenta();
 			}
-		}
-			
+		}	
 	}
 	
 	CONTROLLER:
-		public Cuenta validarCuenta(int idCanjear) {
+	public Cuenta validarCuenta(int idCanjear) {
 		for (Cuenta cuenta : listaCuentas) {
 			if(cuenta.getId() == idCanjear){
 				return cuenta;
@@ -73,12 +77,12 @@ private void canjearPremios() {
 		return null;
 	}
 	
-	public void canjearPuntosController(int idCuenta, int idPremio) {
+	public boolean canjearPuntosController(int idCuenta, int idPremio) {
 		if (validarPremio(idPremio).getPuntos() <= validarCuenta(idCuenta).getPuntos()) {
 			validarCuenta(idCuenta).setPuntos(validarCuenta(idCuenta).getPuntos() - validarPremio(idCuenta).getPuntos());
 			validarCuenta(idCuenta).getPremiosCuenta().add(validarPremio(idPremio));
-			System.out.println("Canje Exitoso, Su nuevo saldo en puntos es: " + validarCuenta(idCuenta).getPuntos());
+			return true;
 		} else{
-			
+			return false;
 		}
 	}
